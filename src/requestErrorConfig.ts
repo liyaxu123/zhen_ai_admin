@@ -25,6 +25,10 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const errorConfig: RequestConfig = {
+  timeout: 10000,
+  baseURL: 'http://localhost:3000',
+  withCredentials: true, // 跨域时允许携带凭证（例如，Cookie）
+
   // 错误处理： umi@3 的错误处理方案。
   errorConfig: {
     // 错误抛出
