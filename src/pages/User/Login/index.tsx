@@ -1,21 +1,24 @@
-import { login } from '@/services/user';
+import { loginApi, registerApi } from '@/services/user';
 import { LoginParams } from '@/services/user/type';
-import { LockOutlined, MobileOutlined, UserOutlined, VerifiedOutlined } from '@ant-design/icons';
-import {
-  LoginFormPage,
-  ProFormCaptcha,
-  ProFormCheckbox,
-  ProFormText,
-} from '@ant-design/pro-components';
+import { LockOutlined, UserOutlined, VerifiedOutlined } from '@ant-design/icons';
+import type { ProFormInstance } from '@ant-design/pro-components';
+import { LoginFormPage, ProFormCheckbox, ProFormText } from '@ant-design/pro-components';
 import { history, useModel } from '@umijs/max';
 import { Tabs, message, theme } from 'antd';
-import { md5 } from 'js-md5';
-import React, { useState } from 'react';
+import * as crypto from 'crypto';
+import React, { useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
+
+function md5(str) {
+  const hash = crypto.createHash('md5');
+  hash.update(str);
+  return hash.digest('hex');
+}
 
 type LoginType = 'login' | 'register';
 
 const Login: React.FC = () => {
+  const formRef = useRef<ProFormInstance>();
   const [loginType, setLoginType] = useState<LoginType>('login');
   const [verifyCodeSrc, setVerifyCodeSrc] = useState<string>(
     `http://localhost:3000/api/v1/user/verifyCode?bgColor=${encodeURIComponent('#eee')}`,
@@ -26,29 +29,41 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: LoginParams) => {
     try {
       // 登录
-      const msg = await login(
-        {
+      if (loginType === 'login') {
+        const res = await loginApi({
           ...values,
           password: md5(values.password!),
-        },
-        {
-          skipErrorHandler: true,
-        },
-      );
-      if (msg.access_token) {
-        message.success('登录成功！');
-        localStorage.setItem('loginInfo', JSON.stringify(msg));
-        flushSync(() => {
-          setInitialState((s: any) => {
-            return {
-              ...s,
-              loginInfo: msg,
-            };
-          });
         });
-        const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
-        return;
+
+        console.log(res);
+
+        if (res.code === 200) {
+          const userInfo = res.data.userInfo;
+          localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+          flushSync(() => {
+            setInitialState((s: any) => {
+              return {
+                ...s,
+                userInfo,
+              };
+            });
+          });
+          message.success('登录成功！');
+          const urlParams = new URL(window.location.href).searchParams;
+          history.push(urlParams.get('redirect') || '/');
+          return;
+        }
+      }
+
+      // 注册
+      if (loginType === 'register') {
+        const res = await registerApi(values);
+        if (res.code === 200) {
+          message.success('注册成功！');
+          formRef.current?.resetFields();
+          setLoginType('login');
+        }
       }
     } catch (error: any) {
       console.log(error);
@@ -57,10 +72,12 @@ const Login: React.FC = () => {
 
   return (
     <LoginFormPage
-      backgroundImageUrl="/images/login_bg2.png"
+      formRef={formRef}
+      backgroundImageUrl="/images/login_bg.jpg"
       backgroundVideoUrl="/login_bg.mp4"
-      logo={<img style={{ width: 220 }} src="/images/logo.png" />}
-      subTitle="兌岛货样编辑系统"
+      logo={<img src="/images/logo-yhc2.png" />}
+      title="荣耀萤火"
+      subTitle="王者荣耀萤火开放素材管理平台"
       initialValues={{
         username: 'admin',
         password: '123456',
@@ -68,11 +85,13 @@ const Login: React.FC = () => {
       onFinish={async (values) => {
         await handleSubmit(values as LoginParams);
       }}
+      submitter={{ searchConfig: { submitText: loginType === 'login' ? '登录' : '注册' } }}
     >
       <Tabs
         centered
         activeKey={loginType}
         onChange={(activeKey) => {
+          formRef.current?.resetFields();
           setLoginType(activeKey as LoginType);
         }}
         items={[
@@ -177,16 +196,34 @@ const Login: React.FC = () => {
               alt="验证码"
             />
           </div>
+
+          <div
+            style={{
+              marginBlockEnd: 24,
+            }}
+          >
+            <ProFormCheckbox noStyle name="autoLogin">
+              自动登录
+            </ProFormCheckbox>
+            <a
+              style={{
+                float: 'right',
+              }}
+            >
+              忘记密码
+            </a>
+          </div>
         </>
       )}
 
       {loginType === 'register' && (
         <>
           <ProFormText
+            name="username"
             fieldProps={{
               size: 'large',
               prefix: (
-                <MobileOutlined
+                <UserOutlined
                   style={{
                     color: token.colorText,
                   }}
@@ -194,20 +231,27 @@ const Login: React.FC = () => {
                 />
               ),
             }}
-            name="mobile"
-            placeholder={'手机号'}
+            placeholder="请输入用户名"
             rules={[
               {
-                required: true,
-                message: '请输入手机号！',
+                min: 5,
+                max: 30,
+                message: '用户名长度为5~30',
               },
               {
-                pattern: /^1\d{10}$/,
-                message: '手机号格式错误！',
+                validator: (_, value) =>
+                  /^[a-zA-Z0-9#$%_-]+$/.test(value)
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('用户名只能由字母、数字或者 #、$、%、_、- 组成')),
+              },
+              {
+                required: true,
+                message: '请输入用户名!',
               },
             ]}
           />
-          <ProFormCaptcha
+          <ProFormText.Password
+            name="password"
             fieldProps={{
               size: 'large',
               prefix: (
@@ -219,45 +263,21 @@ const Login: React.FC = () => {
                 />
               ),
             }}
-            captchaProps={{
-              size: 'large',
-            }}
-            placeholder={'请输入验证码'}
-            captchaTextRender={(timing, count) => {
-              if (timing) {
-                return `${count} ${'获取验证码'}`;
-              }
-              return '获取验证码';
-            }}
-            name="captcha"
+            placeholder="请输入密码"
             rules={[
               {
+                min: 6,
+                max: 30,
+                message: '密码长度为6~30',
+              },
+              {
                 required: true,
-                message: '请输入验证码！',
+                message: '请输入密码！',
               },
             ]}
-            onGetCaptcha={async () => {
-              message.success('获取验证码成功！验证码为：1234');
-            }}
           />
         </>
       )}
-      <div
-        style={{
-          marginBlockEnd: 24,
-        }}
-      >
-        <ProFormCheckbox noStyle name="autoLogin">
-          自动登录
-        </ProFormCheckbox>
-        <a
-          style={{
-            float: 'right',
-          }}
-        >
-          忘记密码
-        </a>
-      </div>
     </LoginFormPage>
   );
 };

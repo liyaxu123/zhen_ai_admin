@@ -4,7 +4,14 @@ export interface LoginParams {
   verifyCode: string;
 }
 
-export interface LoginResult {
+export interface RegisterParams {
+  username: string;
+  password: string;
+}
+
+export interface Result {
+  code: number;
   data: any;
-  access_token: string;
+  msg: string;
+  success: boolean;
 }
