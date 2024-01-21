@@ -99,22 +99,30 @@ const Welcome: React.FC = () => {
               : 'background-image: linear-gradient(75deg, #FBFDFF 0%, #F5F7FF 100%)',
         }}
       >
-        <div
-          style={{
-            backgroundPosition: '100% -30%',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: '274px auto',
-            backgroundImage:
-              "url('https://gw.alipayobjects.com/mdn/rms_a9745b/afts/img/A*BuFmQqsB2iAAAAAAAAAAAAAAARQnAQ')",
-          }}
-        >
+        <div>
+          <div
+            style={{
+              width: 300,
+              position: 'absolute',
+              top: -70,
+              right: 10,
+            }}
+          >
+            <img
+              src="images/hero-painting7.webp"
+              alt="李白"
+              style={{
+                width: '100%',
+              }}
+            />
+          </div>
           <div
             style={{
               fontSize: '20px',
               color: token.colorTextHeading,
             }}
           >
-            欢迎使用 Ant Design Pro
+            欢迎使用荣耀萤火开放素材管理平台
           </div>
           <p
             style={{
@@ -126,9 +134,9 @@ const Welcome: React.FC = () => {
               width: '65%',
             }}
           >
-            Ant Design Pro 是一个整合了 umi，Ant Design 和 ProComponents
-            的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
+            荣耀萤火开放素材平台是《王者荣耀》官方素材平台。该素材平台囊括王者英雄、皮肤、局内等多场景维度内容，包含平面、视频、音频、模型等多种素材类型，为内容创作者提供创作支持。
           </p>
+
           <div
             style={{
               display: 'flex',
@@ -139,12 +147,12 @@ const Welcome: React.FC = () => {
             <InfoCard
               index={1}
               href="https://umijs.org/docs/introduce/introduce"
-              title="了解 umi"
+              title="英雄资料"
               desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
             />
             <InfoCard
               index={2}
-              title="了解 ant design"
+              title="攻略中心"
               href="https://ant.design"
               desc="antd 是基于 Ant Design 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
             />
