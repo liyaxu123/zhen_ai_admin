@@ -40,12 +40,14 @@ const Login: React.FC = () => {
         if (res.code === 200) {
           const userInfo = res.data.userInfo;
           localStorage.setItem('userInfo', JSON.stringify(userInfo));
+          localStorage.setItem('token', JSON.stringify(res.data.token));
 
           flushSync(() => {
             setInitialState((s: any) => {
               return {
                 ...s,
                 userInfo,
+                token: res.data.token,
               };
             });
           });
@@ -240,7 +242,7 @@ const Login: React.FC = () => {
               },
               {
                 validator: (_, value) =>
-                  /^[a-zA-Z0-9#$%_-]+$/.test(value)
+                  /^[a-zA-Z0-9#$%_-]+$/.test(value) || !value
                     ? Promise.resolve()
                     : Promise.reject(new Error('用户名只能由字母、数字或者 #、$、%、_、- 组成')),
               },

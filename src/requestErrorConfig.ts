@@ -34,6 +34,7 @@ export const errorConfig: RequestConfig = {
     // 错误接收及处理
     errorHandler: (error: any, opts: any) => {
       if (opts?.skipErrorHandler) throw error;
+      console.log('errorHandler', error);
 
       message.error(error.response.data.data.message);
     },
@@ -42,15 +43,21 @@ export const errorConfig: RequestConfig = {
   // 请求拦截器
   requestInterceptors: [
     (config: RequestOptions) => {
-      // 拦截请求配置，进行个性化处理。
-      const url = config?.url?.concat('?token = 123');
-      return { ...config, url };
+      console.log('config', config);
+
+      // 注入token
+      const token = localStorage.getItem('token');
+
+      if (config.url !== '/api/v1/user/login' && token) {
+        (config.headers as Record<string, any>).authorization = `Bearer ${JSON.parse(token)}`;
+      }
+      return config;
     },
   ],
 
   // 响应拦截器
   responseInterceptors: [
-    (response) => {
+    (response: any) => {
       // 拦截响应数据，进行个性化处理
       const { data } = response as unknown as ResponseStructure;
 

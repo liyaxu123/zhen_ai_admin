@@ -29,6 +29,23 @@ export default [
     component: './Welcome',
   },
   {
+    path: '/account',
+    name: 'account',
+    hideInMenu: true, // 可以在菜单中不展示这个路由，包括子路由。
+    routes: [
+      // {
+      //   name: 'profileCenter',
+      //   path: '/acount/center',
+      //   component: './User/Profile/Center',
+      // },
+      {
+        name: 'profileSettings',
+        path: '/account/settings',
+        component: './User/Profile/Settings',
+      },
+    ],
+  },
+  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',

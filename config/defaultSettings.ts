@@ -18,7 +18,7 @@ const Settings: ProLayoutProps & {
   colorWeak: false,
   title: '荣耀萤火',
   pwa: true,
-  logo: 'images/logo-yhc2.png',
+  logo: '/images/logo-yhc2.png',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

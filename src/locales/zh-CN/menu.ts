@@ -1,4 +1,6 @@
 export default {
+  'menu.account': '个人中心',
+  'menu.account.profileSettings': '个人设置',
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

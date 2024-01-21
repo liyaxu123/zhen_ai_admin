@@ -9,6 +9,14 @@ export interface RegisterParams {
   password: string;
 }
 
+export interface updateUserInfoParams {
+  nickname: string;
+  email: string;
+  tel: string;
+  intro?: string;
+  avatar?: string;
+}
+
 export interface Result {
   code: number;
   data: any;
