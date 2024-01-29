@@ -30,8 +30,8 @@ declare namespace API {
   };
 
   type PageParams = {
-    current?: number;
-    pageSize?: number;
+    current: number;
+    pageSize: number;
   };
 
   type RuleListItem = {
@@ -54,6 +54,24 @@ declare namespace API {
     /** 列表的内容总数 */
     total?: number;
     success?: boolean;
+  };
+
+  type PermissionListItem = {
+    id: string;
+    code: string;
+    desc: string;
+    createTime: string;
+    updateTime: string;
+  };
+
+  type PermissionList = {
+    code: number;
+    data: {
+      data: PermissionListItem[];
+      total: number;
+    };
+    msg: string;
+    success: boolean;
   };
 
   type FakeCaptcha = {

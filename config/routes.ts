@@ -46,6 +46,33 @@ export default [
     ],
   },
   {
+    path: '/system',
+    name: 'system',
+    icon: 'setting',
+    routes: [
+      {
+        name: 'permission',
+        path: '/system/permission',
+        component: './System/Permission',
+      },
+      {
+        name: 'role',
+        path: '/system/role',
+        component: './System/Role',
+      },
+      {
+        name: 'user',
+        path: '/system/user',
+        component: './System/User',
+      },
+      {
+        name: 'menu',
+        path: '/system/menu',
+        component: './System/Menu',
+      },
+    ],
+  },
+  {
     path: '/admin',
     name: 'admin',
     icon: 'crown',
