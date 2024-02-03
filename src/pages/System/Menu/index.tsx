@@ -10,17 +10,32 @@ const Menu = () => {
 
   const columns: ProColumns<API.RuleListItem>[] = [
     {
-      title: 'id',
-      dataIndex: 'id',
+      title: '菜单名称',
+      dataIndex: 'name',
     },
     {
-      title: '权限code',
-      dataIndex: 'code',
+      title: '图标',
+      dataIndex: 'icon',
     },
     {
-      title: '权限描述',
-      dataIndex: 'desc',
+      title: '排序',
+      dataIndex: 'sort',
       hideInSearch: true,
+    },
+    {
+      title: '权限标识',
+      tooltip: "控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)",
+      dataIndex: 'perms',
+    },
+    {
+      title: '组件路径',
+      tooltip: '访问的组件路径，如：`system/user/index`，默认在`views`目录下',
+      dataIndex: 'component',
+    },
+    {
+      title: '显示状态',
+      tooltip: '选择隐藏则路由将不会出现在侧边栏，但仍然可以访问',
+      dataIndex: 'isShow',
     },
     {
       title: '创建时间',
@@ -29,16 +44,15 @@ const Menu = () => {
       hideInSearch: true,
     },
     {
-      title: '修改时间',
-      dataIndex: 'updateTime',
-      valueType: 'dateTimeRange',
+      title: '类型',
+      dataIndex: 'menuType',
     },
   ];
 
   return (
     <PageContainer>
       <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle="权限标识"
+        headerTitle="菜单列表"
         rowKey="id"
         columns={columns}
         toolBarRender={() => [

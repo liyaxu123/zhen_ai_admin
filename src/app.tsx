@@ -3,7 +3,7 @@ import { LinkOutlined } from '@ant-design/icons';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { Link, history } from '@umijs/max';
+import { history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 const isDev = process.env.NODE_ENV === 'development';
@@ -76,10 +76,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     ],
     links: isDev
       ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+          <a key="openapi" href="http://localhost:3000/api-docs" target="_blank" rel="noreferrer">
             <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
+            <span>接口文档</span>
+          </a>,
         ]
       : [],
     menuHeaderRender: undefined,

@@ -1,8 +1,14 @@
 import { request } from '@umijs/max';
-import { CreatePermissionData, PermissionQueryParams, PermissionQueryResult } from './type';
+import {
+  CreatePermissionData,
+  PermissionQueryParams,
+  PermissionQueryResult,
+  RoleQueryParams,
+} from './type';
 
 enum API {
   permission = '/api/permission',
+  role = '/api/role',
 }
 
 /**
@@ -51,12 +57,20 @@ export async function editPermissionCodeByIDAPI(
 /**
  * @description 权限字典 根据ID删除权限字段
  */
-export async function deletePermissionCodeByIDAPI(
-  id: string,
-  options?: { [key: string]: any },
-) {
+export async function deletePermissionCodeByIDAPI(id: string, options?: { [key: string]: any }) {
   return request<PermissionQueryResult>(`${API.permission}/${id}`, {
     method: 'DELETE',
+    ...(options || {}),
+  });
+}
+
+/**
+ * @description 角色管理 分页查询
+ */
+export async function roleQueryAPI(params: RoleQueryParams, options?: { [key: string]: any }) {
+  return request<PermissionQueryResult>(API.role, {
+    method: 'GET',
+    params,
     ...(options || {}),
   });
 }

@@ -31,3 +31,14 @@ export interface CreatePermissionData {
   code: string;
   desc?: string;
 }
+
+export interface RoleQueryParams {
+  pageNum: number;
+  pageSize: number;
+  id?: string;
+  code?: string;
+  updateTime?: {
+    startTime?: Date;
+    endTime?: Date;
+  };
+}
