@@ -4,6 +4,7 @@ import {
   PermissionQueryParams,
   PermissionQueryResult,
   RoleQueryParams,
+  TreeQueryParams,
 } from './type';
 
 enum API {
@@ -12,7 +13,7 @@ enum API {
 }
 
 /**
- * @description 权限字典 分页查询
+ * @description 权限菜单 分页查询
  */
 export async function permissionQueryAPI(
   params: PermissionQueryParams,
@@ -21,6 +22,17 @@ export async function permissionQueryAPI(
   return request<PermissionQueryResult>(API.permission, {
     method: 'GET',
     params,
+    ...(options || {}),
+  });
+}
+
+/**
+ * @description 查询菜单权限树
+ */
+export async function menuTreeAPI(body: TreeQueryParams, options?: { [key: string]: any }) {
+  return request<PermissionQueryResult>(`${API.permission}/tree`, {
+    method: 'POST',
+    data: body,
     ...(options || {}),
   });
 }
@@ -40,7 +52,7 @@ export async function createPermissionCodeAPI(
 }
 
 /**
- * @description 权限字典 根据ID编辑权限Code
+ * @description 权限菜单 根据ID编辑权限Code
  */
 export async function editPermissionCodeByIDAPI(
   id: string,
@@ -55,7 +67,7 @@ export async function editPermissionCodeByIDAPI(
 }
 
 /**
- * @description 权限字典 根据ID删除权限字段
+ * @description 权限菜单 根据ID删除权限字段
  */
 export async function deletePermissionCodeByIDAPI(id: string, options?: { [key: string]: any }) {
   return request<PermissionQueryResult>(`${API.permission}/${id}`, {

@@ -65,11 +65,6 @@ export default [
         path: '/system/user',
         component: './System/User',
       },
-      {
-        name: 'menu',
-        path: '/system/menu',
-        component: './System/Menu',
-      },
     ],
   },
   {

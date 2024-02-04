@@ -1,7 +1,13 @@
 export interface Permission {
   id: string;
-  code: string;
-  desc: string;
+  pid: string;
+  name: string;
+  icon: string;
+  perms: string;
+  component: string;
+  menuType: 'M' | 'C' | 'F';
+  sort: number;
+  isShow: boolean;
   createTime: string;
   updateTime: string;
 }
@@ -17,19 +23,35 @@ export interface PermissionQueryParams {
   };
 }
 
+export interface TreeQueryParams {
+  name?: string;
+  isShow?: boolean;
+  menuType?: 'M' | 'C' | 'F';
+  code?: string;
+  createTime?: {
+    startTime?: Date;
+    endTime?: Date;
+  };
+}
+
 export interface PermissionQueryResult {
   code: number;
-  data: {
-    data: Permission[];
-    total: number;
-  };
+  data: Permission[];
   msg: string;
   success: boolean;
 }
 
 export interface CreatePermissionData {
-  code: string;
-  desc?: string;
+  pid: string;
+  name: string;
+  icon: string;
+  perms: string;
+  component: string;
+  menuType: 'M' | 'C' | 'F';
+  sort: number;
+  isShow: boolean;
+  createTime: string;
+  updateTime: string;
 }
 
 export interface RoleQueryParams {

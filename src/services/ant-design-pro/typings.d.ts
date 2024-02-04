@@ -58,8 +58,14 @@ declare namespace API {
 
   type PermissionListItem = {
     id: string;
-    code: string;
-    desc: string;
+    pid: string;
+    name: string;
+    icon: string;
+    perms: string;
+    component: string;
+    menuType: 'M' | 'C' | 'F';
+    sort: number;
+    isShow: boolean;
     createTime: string;
     updateTime: string;
   };

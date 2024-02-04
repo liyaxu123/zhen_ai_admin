@@ -2,7 +2,7 @@ import {
   createPermissionCodeAPI,
   deletePermissionCodeByIDAPI,
   editPermissionCodeByIDAPI,
-  permissionQueryAPI,
+  menuTreeAPI,
 } from '@/services/system';
 import { CreatePermissionData } from '@/services/system/type';
 import { PlusOutlined } from '@ant-design/icons';
@@ -10,15 +10,20 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   ModalForm,
   PageContainer,
+  ProFormDependency,
+  ProFormDigit,
+  ProFormRadio,
   ProFormText,
-  ProFormTextArea,
+  ProFormTreeSelect,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, message } from 'antd';
+import { Button, Popconfirm, Tag, message } from 'antd';
+import moment from 'moment';
 import React, { useRef, useState } from 'react';
 
 const Permission: React.FC = () => {
   const actionRef = useRef<ActionType>();
+  const [treeData, setTreeData] = useState<any[]>([]);
   // 新建窗口的弹窗
   const [createModalOpen, handleModalOpen] = useState<boolean>(false);
   const [action, setAction] = useState<'add' | 'edit'>('add');
@@ -26,25 +31,84 @@ const Permission: React.FC = () => {
 
   const columns: ProColumns<API.PermissionListItem>[] = [
     {
-      title: '权限ID',
-      dataIndex: 'id',
-      width: 220,
+      title: '菜单名称',
+      dataIndex: 'name',
       fixed: 'left',
-      copyable: true,
     },
     {
-      title: '权限Code',
-      dataIndex: 'code',
-    },
-    {
-      title: '权限描述',
-      dataIndex: 'desc',
+      title: '图标',
+      dataIndex: 'icon',
+      width: 80,
       hideInSearch: true,
     },
     {
-      title: '修改时间',
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
+      title: '排序',
+      dataIndex: 'sort',
+      width: 50,
+      hideInSearch: true,
+    },
+    {
+      title: '权限标识',
+      tooltip: "控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)",
+      dataIndex: 'perms',
+      hideInSearch: true,
+    },
+    {
+      title: '组件路径',
+      tooltip: '访问的组件路径，如：`system/user/index`，默认在`views`目录下',
+      dataIndex: 'component',
+      hideInSearch: true,
+    },
+    {
+      title: '显示状态',
+      dataIndex: 'isShow',
+      tooltip: '选择隐藏则路由将不会出现在侧边栏，但仍然可以访问',
+      width: 100,
+      valueType: 'select',
+      valueEnum: {
+        true: '显示',
+        false: '隐藏',
+      },
+      render: (_, record) => (
+        <Tag color={record.isShow ? 'success' : 'error'}>{record.isShow ? '显示' : '隐藏'}</Tag>
+      ),
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'dateTimeRange',
+      render: (_, record) => {
+        return moment(record.createTime).format('YYYY-MM-DD HH:mm:ss');
+      },
+      width: 160,
+    },
+    {
+      title: '类型',
+      dataIndex: 'menuType',
+      valueEnum: {
+        M: '目录',
+        C: '菜单',
+        F: '按钮',
+      },
+      render: (_, record) => {
+        let color, text;
+        if (record.menuType === 'M') {
+          color = '#108ee9';
+          text = '目录';
+        }
+        if (record.menuType === 'C') {
+          color = '#87d068';
+          text = '菜单';
+        }
+        if (record.menuType === 'F') {
+          color = '#e7c840';
+          text = '按钮';
+        }
+
+        return <Tag color={color}>{text}</Tag>;
+      },
+      width: 80,
+      fixed: 'right',
     },
     {
       title: '操作',
@@ -92,16 +156,11 @@ const Permission: React.FC = () => {
     <PageContainer>
       <ProTable<API.PermissionListItem, API.PageParams>
         actionRef={actionRef}
-        headerTitle="权限标识"
+        headerTitle="权限菜单树"
         rowKey="id"
         columns={columns}
-        scroll={{ x: 1000 }}
-        pagination={{
-          defaultPageSize: 10,
-          showTotal: (total) => `共 ${total} 条数据`,
-          showSizeChanger: true,
-          showQuickJumper: true,
-        }}
+        scroll={{ x: 1100 }}
+        pagination={false}
         toolBarRender={() => [
           <Button
             type="primary"
@@ -114,52 +173,43 @@ const Permission: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            console.log(selectedRows);
-          },
-        }}
-        tableAlertOptionRender={({ selectedRowKeys, selectedRows, onCleanSelected }) => {
-          // console.log(selectedRowKeys, selectedRows);
-
-          return (
-            <Space size={16}>
-              <a onClick={onCleanSelected}>批量删除</a>
-              <a onClick={onCleanSelected}>导出数据</a>
-              <a onClick={onCleanSelected}>取消选择</a>
-            </Space>
-          );
-        }}
-        request={async (params) => {
-          const res = await permissionQueryAPI({
+        request={async (params: any) => {
+          const res = await menuTreeAPI({
             ...params,
-            pageNum: params.current,
+            isShow: params?.isShow && (params?.isShow === 'true' ? true : false),
+            createTime: params?.createTime && {
+              startTime: params?.createTime?.[0],
+              endTime: params?.createTime?.[1],
+            },
           });
+          setTreeData(res.data);
 
           return {
-            data: res.data.data,
+            data: res.data,
             // 不然 table 会停止解析数据，即使有数据
             success: res.success,
-            // 不传会使用 data 的长度，如果是分页一定要传
-            total: res.data.total,
           };
         }}
       />
 
       {/* 新建权限弹窗 */}
       <ModalForm
-        title={action === 'add' ? '新建权限标识' : '编辑权限标识'}
+        title={action === 'add' ? '新建菜单' : '编辑菜单'}
         initialValues={action === 'edit' ? currentRow : {}}
-        width="400px"
+        layout="horizontal"
+        labelCol={{ span: 5 }}
+        width="600px"
         open={createModalOpen}
         onOpenChange={handleModalOpen}
         modalProps={{
           destroyOnClose: true,
         }}
         onFinish={async (value: CreatePermissionData) => {
+          console.log('onFinish', value);
+
           let code;
           if (action === 'add') {
-            const res = await createPermissionCodeAPI(value);
+            const res = await createPermissionCodeAPI({ ...value, pid: value.pid.toString() });
             code = res.code;
           }
 
@@ -177,17 +227,131 @@ const Permission: React.FC = () => {
           }
         }}
       >
-        <ProFormText
+        <ProFormTreeSelect
+          label="上级菜单"
+          name="pid"
+          initialValue={['0']}
+          fieldProps={{
+            fieldNames: {
+              label: 'name',
+              value: 'id',
+            },
+            treeDefaultExpandAll: true,
+            placeholder: '请选择上级菜单',
+          }}
           rules={[
             {
               required: true,
-              message: '权限Code为必填项',
+              message: '请选择上级菜单',
             },
           ]}
-          label="权限Code"
-          name="code"
+          request={async () => {
+            // const { data } = await menuTreeAPI();
+            // console.log('获取菜单权限树', data);
+
+            return [
+              {
+                name: '主目录',
+                id: '0',
+                children: treeData,
+              },
+            ];
+          }}
         />
-        <ProFormTextArea label="权限描述" name="desc" />
+        <ProFormRadio.Group
+          label="菜单类型"
+          name="menuType"
+          initialValue="M"
+          options={[
+            {
+              label: '目录',
+              value: 'M',
+            },
+            {
+              label: '菜单',
+              value: 'C',
+            },
+            {
+              label: '按钮',
+              value: 'F',
+            },
+          ]}
+          rules={[
+            {
+              required: true,
+              message: '请选择菜单类型',
+            },
+          ]}
+        />
+        <ProFormText
+          label="菜单名称"
+          name="name"
+          rules={[
+            {
+              required: true,
+              message: '菜单名称为必填项',
+            },
+          ]}
+        />
+        <ProFormDependency name={['menuType']}>
+          {({ menuType }) => {
+            return menuType === 'M' || menuType === 'C' ? (
+              <ProFormText label="菜单图标" name="icon" />
+            ) : null;
+          }}
+        </ProFormDependency>
+
+        <ProFormDigit
+          label="显示排序"
+          name="sort"
+          rules={[
+            {
+              required: true,
+              message: '显示排序为必填项',
+            },
+          ]}
+        />
+        <ProFormDependency name={['menuType']}>
+          {({ menuType }) => {
+            return menuType === 'C' ? (
+              <ProFormText
+                label="组件路径"
+                name="component"
+                tooltip="访问的组件路径，如：`system/user/index`，默认在`views`目录下"
+              />
+            ) : null;
+          }}
+        </ProFormDependency>
+
+        <ProFormRadio.Group
+          label="显示状态"
+          name="isShow"
+          initialValue={true}
+          options={[
+            {
+              label: '显示',
+              value: true,
+            },
+            {
+              label: '隐藏',
+              value: false,
+            },
+          ]}
+          rules={[
+            {
+              required: true,
+              message: '请选择菜单显示状态',
+            },
+          ]}
+          tooltip="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问"
+        />
+        <ProFormDependency name={['menuType']}>
+          {({ menuType }) => {
+            return menuType === 'C' || menuType === 'F' ? (
+              <ProFormText label="权限标识" name="perms" />
+            ) : null;
+          }}
+        </ProFormDependency>
       </ModalForm>
     </PageContainer>
   );
