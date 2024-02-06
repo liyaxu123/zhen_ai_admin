@@ -1,6 +1,7 @@
 import { request } from '@umijs/max';
 import {
   CreatePermissionData,
+  CreateRoleData,
   PermissionQueryParams,
   PermissionQueryResult,
   RoleQueryParams,
@@ -83,6 +84,42 @@ export async function roleQueryAPI(params: RoleQueryParams, options?: { [key: st
   return request<PermissionQueryResult>(API.role, {
     method: 'GET',
     params,
+    ...(options || {}),
+  });
+}
+
+/**
+ * @description 角色管理 创建角色
+ */
+export async function roleCreateAPI(body: CreateRoleData, options?: { [key: string]: any }) {
+  return request<PermissionQueryResult>(API.role, {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/**
+ * @description 角色管理 编辑角色信息
+ */
+export async function roleUpdateAPI(
+  id: string,
+  body: CreateRoleData,
+  options?: { [key: string]: any },
+) {
+  return request<PermissionQueryResult>(`${API.role}/${id}`, {
+    method: 'PATCH',
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/**
+ * @description 角色管理 根据ID删除角色
+ */
+export async function deleteRoleByIDAPI(id: string, options?: { [key: string]: any }) {
+  return request<PermissionQueryResult>(`${API.role}/${id}`, {
+    method: 'DELETE',
     ...(options || {}),
   });
 }

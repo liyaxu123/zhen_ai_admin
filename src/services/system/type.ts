@@ -57,10 +57,13 @@ export interface CreatePermissionData {
 export interface RoleQueryParams {
   pageNum: number;
   pageSize: number;
-  id?: string;
-  code?: string;
-  updateTime?: {
-    startTime?: Date;
-    endTime?: Date;
-  };
+  name?: string;
+  status?: boolean;
+}
+
+export interface CreateRoleData {
+  name: string;
+  desc?: string;
+  status: boolean;
+  permissionIds: string[];
 }
