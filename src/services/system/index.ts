@@ -5,12 +5,15 @@ import {
   PermissionQueryParams,
   PermissionQueryResult,
   RoleQueryParams,
+  RoleQueryResult,
   TreeQueryParams,
+  UserQueryData,
 } from './type';
 
 enum API {
   permission = '/api/permission',
   role = '/api/role',
+  user = '/api/v1/user',
 }
 
 /**
@@ -81,7 +84,7 @@ export async function deletePermissionCodeByIDAPI(id: string, options?: { [key: 
  * @description 角色管理 分页查询
  */
 export async function roleQueryAPI(params: RoleQueryParams, options?: { [key: string]: any }) {
-  return request<PermissionQueryResult>(API.role, {
+  return request<RoleQueryResult>(API.role, {
     method: 'GET',
     params,
     ...(options || {}),
@@ -120,6 +123,17 @@ export async function roleUpdateAPI(
 export async function deleteRoleByIDAPI(id: string, options?: { [key: string]: any }) {
   return request<PermissionQueryResult>(`${API.role}/${id}`, {
     method: 'DELETE',
+    ...(options || {}),
+  });
+}
+
+/**
+ * @description 用户管理 分页查询
+ */
+export async function userQueryAPI(body: UserQueryData, options?: { [key: string]: any }) {
+  return request<RoleQueryResult>(`${API.user}/page`, {
+    method: 'POST',
+    data: body,
     ...(options || {}),
   });
 }

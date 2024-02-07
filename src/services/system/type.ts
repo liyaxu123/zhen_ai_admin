@@ -61,9 +61,26 @@ export interface RoleQueryParams {
   status?: boolean;
 }
 
+export interface RoleQueryResult {
+  code: number;
+  data: any;
+  msg: string;
+  success: boolean;
+}
+
 export interface CreateRoleData {
   name: string;
   desc?: string;
   status: boolean;
   permissionIds: string[];
+}
+
+export interface UserQueryData {
+  pageNum: number;
+  pageSize: number;
+  username?: string;
+  nickname?: string;
+  email?: string;
+  tel?: string;
+  createTime?: { startTime: string; endTime: string };
 }

@@ -44,6 +44,19 @@ declare namespace API {
     permissions?: any[];
   };
 
+  type UserListItem = {
+    id: string;
+    username?: string;
+    avatar?: string;
+    nickname?: string;
+    tel?: string;
+    email?: string;
+    intro?: string;
+    createTime?: Date;
+    updateTime?: Date;
+    roles?: any[];
+  };
+
   type RuleList = {
     data?: RuleListItem[];
     /** 列表的内容总数 */

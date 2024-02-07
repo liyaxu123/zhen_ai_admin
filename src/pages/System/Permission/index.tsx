@@ -1,3 +1,4 @@
+import IconSelect, { UseIcon } from '@/components/IconSelect';
 import {
   createPermissionCodeAPI,
   deletePermissionCodeByIDAPI,
@@ -17,7 +18,7 @@ import {
   ProFormTreeSelect,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Popconfirm, Tag, message } from 'antd';
+import { Button, Form, Popconfirm, Tag, message } from 'antd';
 import moment from 'moment';
 import React, { useRef, useState } from 'react';
 
@@ -38,29 +39,35 @@ const Permission: React.FC = () => {
     {
       title: '图标',
       dataIndex: 'icon',
-      width: 80,
+      width: 50,
       hideInSearch: true,
+      align: 'center',
+      render: (_, record) => UseIcon(record.icon),
     },
     {
       title: '排序',
       dataIndex: 'sort',
       width: 50,
       hideInSearch: true,
+      align: 'center',
     },
     {
       title: '权限标识',
       tooltip: "控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)",
       dataIndex: 'perms',
       hideInSearch: true,
+      align: 'center',
     },
     {
       title: '组件路径',
       tooltip: '访问的组件路径，如：`system/user/index`，默认在`views`目录下',
       dataIndex: 'component',
       hideInSearch: true,
+      align: 'center',
     },
     {
       title: '显示状态',
+      align: 'center',
       dataIndex: 'isShow',
       tooltip: '选择隐藏则路由将不会出现在侧边栏，但仍然可以访问',
       width: 100,
@@ -75,6 +82,7 @@ const Permission: React.FC = () => {
     },
     {
       title: '创建时间',
+      align: 'center',
       dataIndex: 'createTime',
       valueType: 'dateTimeRange',
       render: (_, record) => {
@@ -296,7 +304,10 @@ const Permission: React.FC = () => {
         <ProFormDependency name={['menuType']}>
           {({ menuType }) => {
             return menuType === 'M' || menuType === 'C' ? (
-              <ProFormText label="菜单图标" name="icon" />
+              // <ProFormText label="菜单图标" name="icon" />
+              <Form.Item label="菜单图标" name="icon">
+                <IconSelect />
+              </Form.Item>
             ) : null;
           }}
         </ProFormDependency>
